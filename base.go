@@ -7,16 +7,18 @@ import (
 type SpttyConfig map[string]interface{}
 
 type Sptty interface {
-	//Config() SpttyConfig
 	GetService(name string) Service
 	AddServices(services map[string]Service)
 	AddConfigs(cfg SpttyConfig)
-	GetConfig(name string, config interface{})
+	GetConfig(name string, config interface{}) error
 	Http() Service
+	Model() Service
 	AddRoute(method string, route string, handler context.Handler)
+	AddModel(m interface{})
 }
 
 type Service interface {
-	Init(service Sptty) error
+	Init(app Sptty) error
 	Release()
+	Enable() bool
 }

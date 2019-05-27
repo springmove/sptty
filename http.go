@@ -82,6 +82,10 @@ func (http *HttpService) Release() {
 
 }
 
+func (http *HttpService) Enable() bool {
+	return true
+}
+
 func (http *HttpService) AddRoute(method string, route string, handler context.Handler) {
 	http.party.Handle(method, route, handler)
 }

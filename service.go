@@ -14,11 +14,12 @@ func GetApp() *AppService {
 			http: &HttpService{
 				app: iris.New(),
 			},
+			model:    &ModelService{},
 			config:   &Config{},
 			services: map[string]Service{},
 		}
 
-		appService.Http().(*HttpService).SetOptions()
+		appService.http.(*HttpService).SetOptions()
 	}
 
 	return appService
@@ -27,12 +28,17 @@ func GetApp() *AppService {
 type AppService struct {
 	services map[string]Service
 	http     Service
+	model    Service
 	config   Service
 	Sptty
 }
 
 func (bs *AppService) init() {
 	if bs.config.Init(bs) != nil {
+		return
+	}
+
+	if bs.model.Init(bs) != nil {
 		return
 	}
 
@@ -66,8 +72,8 @@ func (bs *AppService) AddConfigs(cfgs SpttyConfig) {
 	bs.config.(*Config).AddConfigs(cfgs)
 }
 
-func (bs *AppService) SetConf(conf string) {
-	bs.config.(*Config).SetConf(conf)
+func (bs *AppService) ConfFromFile(conf string) {
+	bs.config.(*Config).SetConfPath(conf)
 }
 
 func (bs *AppService) cfg() SpttyConfig {
@@ -75,22 +81,29 @@ func (bs *AppService) cfg() SpttyConfig {
 	return config.cfg
 }
 
-func (bs *AppService) GetConfig(name string, config interface{}) {
+func (bs *AppService) GetConfig(name string, config interface{}) error {
 	cfg := bs.cfg()[name]
 	if cfg == nil {
-		return
+		return nil
 	}
 
-	mapstructure.Decode(cfg, config)
+	return mapstructure.Decode(cfg, config)
 }
 
 func (bs *AppService) AddRoute(method string, route string, handler context.Handler) {
-	http := bs.http.(*HttpService)
-	http.AddRoute(method, route, handler)
+	bs.http.(*HttpService).AddRoute(method, route, handler)
+}
+
+func (bs *AppService) AddModel(m interface{}) {
+	bs.model.(*ModelService).AddModel(m)
 }
 
 func (bs *AppService) Http() Service {
 	return bs.http
+}
+
+func (bs *AppService) Model() Service {
+	return bs.model
 }
 
 func (bs *AppService) GetService(name string) Service {

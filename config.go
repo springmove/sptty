@@ -37,11 +37,15 @@ func (s *Config) Release() {
 
 }
 
+func (s *Config) Enable() bool {
+	return true
+}
+
 func (s *Config) AddConfigs(cfgs SpttyConfig) {
 	s.cfg = cfgs
 }
 
-func (s *Config) SetConf(conf string) {
+func (s *Config) SetConfPath(conf string) {
 	s.confPath = conf
 }
 
