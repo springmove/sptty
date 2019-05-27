@@ -64,6 +64,7 @@ func (http *HttpService) SetOptions() {
 		AllowedOrigins:   []string{"*"},
 		AllowCredentials: true,
 		AllowedMethods:   []string{"GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
 	})
 
 	http.party = http.app.Party(BASE_API_ROUTE, crs).AllowMethods(iris.MethodOptions)
