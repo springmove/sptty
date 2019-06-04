@@ -65,9 +65,9 @@ func (s *ModelService) Init(app Sptty) error {
 	return nil
 }
 
-func (s *ModelService) AddModel(m interface{}) {
+func (s *ModelService) AddModel(values interface{}) {
 	if s.db != nil {
-		s.db.AutoMigrate(m)
+		s.db.AutoMigrate(values)
 	}
 }
 

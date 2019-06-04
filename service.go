@@ -94,8 +94,8 @@ func (bs *AppService) AddRoute(method string, route string, handler context.Hand
 	bs.http.(*HttpService).AddRoute(method, route, handler)
 }
 
-func (bs *AppService) AddModel(m interface{}) {
-	bs.model.(*ModelService).AddModel(m)
+func (bs *AppService) AddModel(values interface{}) {
+	bs.model.(*ModelService).AddModel(values)
 }
 
 func (bs *AppService) Http() Service {

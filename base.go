@@ -14,7 +14,7 @@ type Sptty interface {
 	Http() Service
 	Model() Service
 	AddRoute(method string, route string, handler context.Handler)
-	AddModel(m interface{})
+	AddModel(values interface{})
 }
 
 type Service interface {
