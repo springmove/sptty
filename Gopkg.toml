@@ -1,6 +1,6 @@
 [[constraint]]
   name = "github.com/kataras/iris"
-  version = "11.2.2"
+  version = "11.1.1"
 
 [prune]
   go-tests = true
