@@ -9,6 +9,18 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/CloudyKit/fastprinter"
+  packages = ["."]
+  revision = "74b38d55f37af5d6c05ca11147d616b613a3420e"
+
+[[projects]]
+  name = "github.com/CloudyKit/jet"
+  packages = ["."]
+  revision = "2b064536b25ab0e9c54245f9e2cc5bd4766033fe"
+  version = "v2.1.2"
+
+[[projects]]
+  branch = "master"
   name = "github.com/Joker/jade"
   packages = ["."]
   revision = "d475f43051e722977ea1bfa344e52b1bafd832ba"
@@ -62,28 +74,10 @@
   version = "v1.0.0"
 
 [[projects]]
-  name = "github.com/gorilla/schema"
-  packages = ["."]
-  revision = "124d17ef95858a10835ce95502446cb5a9e9f715"
-  version = "v1.1.0"
-
-[[projects]]
-  name = "github.com/hashicorp/go-version"
-  packages = ["."]
-  revision = "ac23dc3fea5d1a983c43f6a0f6e2c13f0195d8bd"
-  version = "v1.2.0"
-
-[[projects]]
   name = "github.com/iris-contrib/blackfriday"
   packages = ["."]
   revision = "48b3da6a6f3865c7eb1eba96d74cf0a16f63faca"
   version = "v2.0.0"
-
-[[projects]]
-  name = "github.com/iris-contrib/formBinder"
-  packages = ["."]
-  revision = "612838d56471c4567c1727260d4999a58da6ebf5"
-  version = "v5.0.0"
 
 [[projects]]
   name = "github.com/iris-contrib/go.uuid"
@@ -96,6 +90,12 @@
   packages = ["cors"]
   revision = "5f3a20f489c42276e74d54c49393b521945a8c02"
   version = "v11"
+
+[[projects]]
+  name = "github.com/iris-contrib/schema"
+  packages = ["."]
+  revision = "1f5dc3fa1ac517978c014cb1df99540fa5b17f7e"
+  version = "v0.0.1"
 
 [[projects]]
   name = "github.com/jinzhu/gorm"
@@ -129,21 +129,15 @@
 
 [[projects]]
   name = "github.com/kataras/iris"
-  packages = [".","cache","cache/cfg","cache/client","cache/client/rule","cache/entry","cache/ruleset","cache/uri","context","core/errors","core/handlerconv","core/host","core/maintenance","core/maintenance/version","core/memstore","core/netutil","core/router","core/router/macro","core/router/macro/interpreter/ast","core/router/macro/interpreter/lexer","core/router/macro/interpreter/parser","core/router/macro/interpreter/token","core/router/node","middleware/logger","middleware/recover","view"]
-  revision = "39b8b1eb00eae9914addee3dee3612ffa785817f"
-  version = "v10.7.1"
+  packages = [".","cache","cache/cfg","cache/client","cache/client/rule","cache/entry","cache/ruleset","cache/uri","context","core/errors","core/handlerconv","core/host","core/memstore","core/netutil","core/router","macro","macro/handler","macro/interpreter/ast","macro/interpreter/lexer","macro/interpreter/parser","macro/interpreter/token","middleware/logger","middleware/recover","view"]
+  revision = "2fc1205920a81e6e11610efbfa68e5689327178d"
+  version = "v11.2.3"
 
 [[projects]]
   branch = "master"
   name = "github.com/kataras/pio"
   packages = [".","terminal"]
   revision = "ea782b38602d1e5df3c2b891978a1f80d917a6bd"
-
-[[projects]]
-  name = "github.com/kataras/survey"
-  packages = [".","core","terminal"]
-  revision = "00934ae069eda15df26fa427ac393e67e239380c"
-  version = "v2.0.0"
 
 [[projects]]
   name = "github.com/klauspost/compress"
@@ -162,24 +156,6 @@
   packages = [".","hstore","oid","scram"]
   revision = "3427c32cb71afc948325f299f040e53c1dd78979"
   version = "v1.2.0"
-
-[[projects]]
-  name = "github.com/mattn/go-colorable"
-  packages = ["."]
-  revision = "8029fb3788e5a4a9c00e415f586a6d033f5d38b3"
-  version = "v0.1.2"
-
-[[projects]]
-  name = "github.com/mattn/go-isatty"
-  packages = ["."]
-  revision = "1311e847b0cb909da63b5fecfb5370aa66236465"
-  version = "v0.0.8"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/mgutz/ansi"
-  packages = ["."]
-  revision = "9520e82c474b0a04dd04f8a40959027271bab992"
 
 [[projects]]
   branch = "master"
@@ -256,6 +232,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d39d96edaf8e27d399fa1db7de23c35074ef676a9651a7dba50f30e8b090d127"
+  inputs-digest = "3167221b387123d657ee7cef23cbcfc39c281a46140fafb3dc4d8bcbdac647b3"
   solver-name = "gps-cdcl"
   solver-version = 1
