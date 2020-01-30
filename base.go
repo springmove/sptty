@@ -4,12 +4,13 @@ import (
 	"github.com/kataras/iris/context"
 )
 
-type SpttyConfig map[string]interface{}
+type Configs []Config
+type Services []Service
 
 type Sptty interface {
 	GetService(name string) Service
-	AddServices(services map[string]Service)
-	AddConfigs(cfg SpttyConfig)
+	AddServices(services Services)
+	AddConfigs(cfg Configs)
 	GetConfig(name string, config interface{}) error
 	Http() Service
 	Model() Service
@@ -21,4 +22,10 @@ type Service interface {
 	Init(app Sptty) error
 	Release()
 	Enable() bool
+	ServiceName() string
+}
+
+type Config interface {
+	ConfigName() string
+	Validate() error
 }

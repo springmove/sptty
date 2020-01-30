@@ -1,17 +1,22 @@
 package sptty
 
 import (
+	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
 )
 
-type Config struct {
+const (
+	ConfigServiceName = "config"
+)
+
+type ConfigService struct {
 	confPath string
-	cfg      SpttyConfig
+	cfgs     map[string]Config
 }
 
-func (s *Config) Init(app Sptty) error {
+func (s *ConfigService) Init(app Sptty) error {
 
 	f, err := os.Open(s.confPath)
 	defer f.Close()
@@ -25,7 +30,7 @@ func (s *Config) Init(app Sptty) error {
 		return err
 	}
 
-	err = yaml.Unmarshal(content, &s.cfg)
+	err = yaml.Unmarshal(content, &s.cfgs)
 	if err != nil {
 		return err
 	}
@@ -33,26 +38,36 @@ func (s *Config) Init(app Sptty) error {
 	return nil
 }
 
-func (s *Config) Release() {
+func (s *ConfigService) validate() error {
+	for _, v := range s.cfgs {
+		err := v.Validate()
+		if err != nil {
+			fmt.Printf("Config Error: %s", err.Error())
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *ConfigService) Release() {
 
 }
 
-func (s *Config) Enable() bool {
+func (s *ConfigService) Enable() bool {
 	return true
 }
 
-func (s *Config) AddConfigs(cfgs SpttyConfig) {
-	s.cfg = cfgs
+func (s *ConfigService) AddConfigs(cfgs Configs) {
+	for k, v := range cfgs {
+		s.cfgs[v.ConfigName()] = cfgs[k]
+	}
 }
 
-func (s *Config) SetConfPath(conf string) {
+func (s *ConfigService) SetConfPath(conf string) {
 	s.confPath = conf
 }
 
-func (s *Config) Config() interface{} {
-	return s.Config()
-}
-
-func (s *Config) ServiceName() string {
-	return "config"
+func (s *ConfigService) ServiceName() string {
+	return ConfigServiceName
 }

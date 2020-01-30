@@ -1,7 +1,6 @@
 package sptty
 
 import (
-	"github.com/iris-contrib/middleware/cors"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
 	"gopkg.in/resty.v1"
@@ -9,7 +8,8 @@ import (
 )
 
 const (
-	BASE_API_ROUTE = "/api/v1"
+	BaseApiRoute    = "/api/v1"
+	HttpServiceName = "http"
 )
 
 type HttpConfig struct {
@@ -39,9 +39,6 @@ type HttpClientConfig struct {
 type HttpService struct {
 	app   *iris.Application
 	party iris.Party
-	Service
-	//cors CorsConfig
-	//routes []Route
 }
 
 func CreateHttpClient(cfg *HttpClientConfig) *resty.Client {
@@ -59,34 +56,39 @@ func CreateHttpClient(cfg *HttpClientConfig) *resty.Client {
 	return client
 }
 
-func (http *HttpService) SetOptions() {
-	crs := cors.New(cors.Options{
-		AllowedOrigins:   []string{"*"},
-		AllowCredentials: true,
-		AllowedMethods:   []string{"GET", "HEAD", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"*"},
-	})
+func (s *HttpService) SetOptions() {
+	crs := func(ctx iris.Context) {
+		ctx.Header("Access-Control-Allow-Origin", "*")
+		ctx.Header("Access-Control-Allow-Credentials", "true")
+		ctx.Header("Access-Control-Allow-Headers", "*")
+		ctx.Header("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS")
+		ctx.Next()
+	}
 
-	http.party = http.app.Party(BASE_API_ROUTE, crs).AllowMethods(iris.MethodOptions)
+	s.party = s.app.Party(BaseApiRoute, crs).AllowMethods(iris.MethodOptions)
 }
 
-func (http *HttpService) Init(app Sptty) error {
+func (s *HttpService) Init(app Sptty) error {
 	cfg := HttpConfig{}
-	app.GetConfig("http", &cfg)
+	app.GetConfig("s", &cfg)
 
-	http.app.Run(iris.Addr(cfg.Addr), iris.WithoutInterruptHandler)
+	s.app.Run(iris.Addr(cfg.Addr), iris.WithoutInterruptHandler)
 
 	return nil
 }
 
-func (http *HttpService) Release() {
+func (s *HttpService) Release() {
 
 }
 
-func (http *HttpService) Enable() bool {
+func (s *HttpService) Enable() bool {
 	return true
 }
 
-func (http *HttpService) AddRoute(method string, route string, handler context.Handler) {
-	http.party.Handle(method, route, handler)
+func (s *HttpService) AddRoute(method string, route string, handler context.Handler) {
+	s.party.Handle(method, route, handler)
+}
+
+func (s *HttpService) ServiceName() string {
+	return HttpServiceName
 }

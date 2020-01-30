@@ -1,9 +1,10 @@
 package sptty
 
 import (
+	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
-	"github.com/mitchellh/mapstructure"
+	"gopkg.in/yaml.v2"
 )
 
 var appService *AppService = nil
@@ -15,101 +16,124 @@ func GetApp() *AppService {
 				app: iris.New(),
 			},
 			model:    &ModelService{},
-			config:   &Config{},
+			config:   &ConfigService{},
+			log:      &LogService{},
 			services: map[string]Service{},
 		}
 
-		appService.http.(*HttpService).SetOptions()
+		appService.http.SetOptions()
 	}
 
 	return appService
 }
 
+func Log(level LogLevel, msg string, tags ...string) {
+	app := GetApp()
+	log := app.GetService(LogServiceName).(*LogService)
+	log.Log(level, msg, tags...)
+}
+
 type AppService struct {
 	services map[string]Service
-	http     Service
-	model    Service
-	config   Service
+	http     *HttpService
+	model    *ModelService
+	config   *ConfigService
+	log      *LogService
 	Sptty
 }
 
-func (bs *AppService) init() {
-	if bs.config.Init(bs) != nil {
-		return
+func (s *AppService) init() error {
+	if err := s.config.Init(s); err != nil {
+		return err
 	}
 
-	if bs.model.Init(bs) != nil {
-		return
+	if err := s.config.validate(); err != nil {
+		return err
 	}
 
-	for _, v := range bs.services {
-		if v.Init(bs) != nil {
-			return
+	if err := s.log.Init(s); err != nil {
+		return err
+	}
+
+	Log(InfoLevel, fmt.Sprintf("init service: %s", s.model.ServiceName()), s.model.ServiceName())
+	if err := s.model.Init(s); err != nil {
+		return err
+	}
+
+	for _, v := range s.services {
+		Log(InfoLevel, fmt.Sprintf("init service: %s", v.ServiceName()), v.ServiceName())
+		if err := v.Init(s); err != nil {
+			return err
 		}
 	}
 
-	bs.http.Init(bs)
+	if err := s.http.Init(s); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (bs *AppService) release() {
-	for _, v := range bs.services {
+func (s *AppService) release() {
+	for _, v := range s.services {
 		v.Release()
 	}
 
-	bs.http.Release()
+	s.http.Release()
 }
 
-func (bs *AppService) Sptting() {
-	bs.init()
-	bs.release()
+func (s *AppService) Sptting() {
+	if s.init() != nil {
+		return
+	}
+
+	s.release()
 }
 
-func (bs *AppService) AddServices(services map[string]Service) {
-	bs.services = services
+func (s *AppService) AddServices(services Services) {
+	for k, v := range services {
+		s.services[v.ServiceName()] = services[k]
+	}
 }
 
-func (bs *AppService) AddConfigs(cfgs SpttyConfig) {
-	bs.config.(*Config).AddConfigs(cfgs)
+func (s *AppService) AddConfigs(cfgs Configs) {
+	s.config.AddConfigs(cfgs)
 }
 
-func (bs *AppService) ConfFromFile(conf string) {
-	bs.config.(*Config).SetConfPath(conf)
+func (s *AppService) ConfFromFile(conf string) {
+	s.config.SetConfPath(conf)
 }
 
-func (bs *AppService) cfg() SpttyConfig {
-	config := bs.config.(*Config)
-	return config.cfg
-}
-
-func (bs *AppService) GetConfig(name string, config interface{}) error {
-	cfg := bs.cfg()[name]
+func (s *AppService) GetConfig(name string, config interface{}) error {
+	cfg := s.config.cfgs[name]
 	if cfg == nil {
 		return nil
 	}
 
-	return mapstructure.Decode(cfg, config)
+	body, _ := yaml.Marshal(cfg)
+	return yaml.Unmarshal(body, config)
 }
 
-func (bs *AppService) AddRoute(method string, route string, handler context.Handler) {
-	bs.http.(*HttpService).AddRoute(method, route, handler)
+func (s *AppService) AddRoute(method string, route string, handler context.Handler) {
+	s.http.AddRoute(method, route, handler)
 }
 
-func (bs *AppService) AddModel(values interface{}) {
-	bs.model.(*ModelService).AddModel(values)
+func (s *AppService) AddModel(values interface{}) {
+	s.model.AddModel(values)
 }
 
-func (bs *AppService) Http() Service {
-	return bs.http
+func (s *AppService) Http() Service {
+	return s.http
 }
 
-func (bs *AppService) Model() Service {
-	return bs.model
+func (s *AppService) Model() Service {
+	return s.model
 }
 
-func (bs *AppService) GetService(name string) Service {
-	return bs.services[name]
+func (s *AppService) GetService(name string) Service {
+	return s.services[name]
 }
 
-func (bs *AppService) RegistService(name string, service Service) {
-	bs.services[name] = service
+func (s *AppService) RegistService(name string, service Service) {
+	s.services[name] = service
 }

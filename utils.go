@@ -1,6 +1,9 @@
 package sptty
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"github.com/rs/xid"
+)
 
 type RequestError struct {
 	Code string `json:"code"`
@@ -14,4 +17,8 @@ func NewRequestError(code string, msg string) []byte {
 	})
 
 	return b
+}
+
+func GenerateUID() string {
+	return xid.New().String()
 }

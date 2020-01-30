@@ -1,0 +1,11 @@
+cfg1:
+  key1: awefawf
+  key2: 8
+  key3_wefli2: 23h
+
+cfg2:
+  key4:
+    - 1
+    - 2
+  key5:
+    k: v123
