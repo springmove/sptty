@@ -1,7 +1,6 @@
 package sptty
 
 import (
-	"fmt"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
@@ -13,7 +12,7 @@ const (
 
 type ConfigService struct {
 	confPath string
-	cfgs     map[string]Config
+	cfgs     map[string]interface{}
 }
 
 func (s *ConfigService) Init(app Sptty) error {
@@ -38,30 +37,12 @@ func (s *ConfigService) Init(app Sptty) error {
 	return nil
 }
 
-func (s *ConfigService) validate() error {
-	for _, v := range s.cfgs {
-		err := v.Validate()
-		if err != nil {
-			fmt.Printf("Config Error: %s", err.Error())
-			return err
-		}
-	}
-
-	return nil
-}
-
 func (s *ConfigService) Release() {
 
 }
 
 func (s *ConfigService) Enable() bool {
 	return true
-}
-
-func (s *ConfigService) AddConfigs(cfgs Configs) {
-	for k, v := range cfgs {
-		s.cfgs[v.ConfigName()] = cfgs[k]
-	}
 }
 
 func (s *ConfigService) SetConfPath(conf string) {

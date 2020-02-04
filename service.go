@@ -1,6 +1,7 @@
 package sptty
 
 import (
+	"errors"
 	"fmt"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
@@ -15,12 +16,11 @@ func GetApp() *AppService {
 			http: &HttpService{
 				app: iris.New(),
 			},
-			model: &ModelService{},
-			config: &ConfigService{
-				cfgs: map[string]Config{},
-			},
+			model:    &ModelService{},
+			config:   &ConfigService{},
 			log:      &LogService{},
 			services: map[string]Service{},
+			configs:  map[string]Config{},
 		}
 
 		appService.http.SetOptions()
@@ -37,6 +37,7 @@ func Log(level LogLevel, msg string, tags ...string) {
 
 type AppService struct {
 	services map[string]Service
+	configs  map[string]Config
 	http     *HttpService
 	model    *ModelService
 	config   *ConfigService
@@ -49,7 +50,7 @@ func (s *AppService) init() error {
 		return err
 	}
 
-	if err := s.config.validate(); err != nil {
+	if err := s.validateConfigs(); err != nil {
 		return err
 	}
 
@@ -99,7 +100,21 @@ func (s *AppService) AddServices(services Services) {
 }
 
 func (s *AppService) AddConfigs(cfgs Configs) {
-	s.config.AddConfigs(cfgs)
+	for k, v := range cfgs {
+		s.configs[v.ConfigName()] = cfgs[k]
+	}
+}
+
+func (s *AppService) validateConfigs() error {
+	for _, v := range s.configs {
+		err := v.Validate()
+		if err != nil {
+			fmt.Printf("Config Error: %s", err.Error())
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (s *AppService) ConfFromFile(conf string) {
@@ -109,7 +124,7 @@ func (s *AppService) ConfFromFile(conf string) {
 func (s *AppService) GetConfig(name string, config interface{}) error {
 	cfg := s.config.cfgs[name]
 	if cfg == nil {
-		return nil
+		return errors.New(" Config Not Found")
 	}
 
 	body, _ := yaml.Marshal(cfg)
