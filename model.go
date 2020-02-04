@@ -50,7 +50,7 @@ func (s *ModelService) Init(app Sptty) error {
 	s.db = nil
 
 	cfg := ModelConfig{}
-	err := app.GetConfig("model", &cfg)
+	err := app.GetConfig(s.ServiceName(), &cfg)
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func (s *ModelService) DB() *gorm.DB {
 
 func (s *ModelService) Release() {
 	if s.db != nil {
-		s.db.Close()
+		_ = s.db.Close()
 	}
 }
 
