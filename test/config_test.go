@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"github.com/linshenqi/sptty"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
@@ -52,10 +53,10 @@ func TestConfig(t *testing.T) {
 	content, _ := ioutil.ReadAll(f)
 	yaml.Unmarshal(content, &cfgs)
 
-	//cfg1 := cfg1{}
-	//body, _ := yaml.Marshal(cfgs["cfg1"])
-	//yaml.Unmarshal(body, &cfg1)
-	//fmt.Println(cfg1)
+	var cfg1 *cfg1
+	body, _ := yaml.Marshal(cfgs[0])
+	yaml.Unmarshal(body, cfg1)
+	fmt.Println(cfg1)
 	//
 	//cfg2 := cfg2{}
 	//body, _ = yaml.Marshal(cfgs["cfg2"])

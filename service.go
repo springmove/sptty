@@ -31,8 +31,7 @@ func GetApp() *AppService {
 
 func Log(level LogLevel, msg string, tags ...string) {
 	app := GetApp()
-	log := app.GetService(LogServiceName).(*LogService)
-	log.Log(level, msg, tags...)
+	app.log.Log(level, msg, tags...)
 }
 
 type AppService struct {

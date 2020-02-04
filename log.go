@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	LogServiceName = "LOG"
+	LogServiceName = "log"
 	LogStdout      = "STDOUT"
 	LogTag         = "tag"
 
@@ -37,12 +37,12 @@ type LogConfig struct {
 }
 
 type LogService struct {
-	cfg *LogConfig
+	cfg LogConfig
 }
 
 func (s *LogService) Init(app Sptty) error {
-
-	err := app.GetConfig(s.ServiceName(), s.cfg)
+	s.cfg = LogConfig{}
+	err := app.GetConfig(s.ServiceName(), &s.cfg)
 	if err != nil {
 		s.cfg = s.defaultConfig()
 	}
@@ -88,8 +88,8 @@ func (s *LogService) Log(level LogLevel, msg string, tags ...string) {
 	}
 }
 
-func (s *LogService) defaultConfig() *LogConfig {
-	return &LogConfig{
+func (s *LogService) defaultConfig() LogConfig {
+	return LogConfig{
 		File:   "STDOUT",
 		Level:  "DEBUG",
 		MaxAge: 2160 * time.Hour,
