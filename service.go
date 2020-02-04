@@ -15,8 +15,10 @@ func GetApp() *AppService {
 			http: &HttpService{
 				app: iris.New(),
 			},
-			model:    &ModelService{},
-			config:   &ConfigService{},
+			model: &ModelService{},
+			config: &ConfigService{
+				cfgs: map[string]Config{},
+			},
 			log:      &LogService{},
 			services: map[string]Service{},
 		}
