@@ -13,7 +13,21 @@ const (
 )
 
 type HttpConfig struct {
-	Addr string
+	Addr string `yaml:"addr"`
+}
+
+func (c *HttpConfig) ConfigName() string {
+	return HttpServiceName
+}
+
+func (c *HttpConfig) Validate() error {
+	return nil
+}
+
+func (c *HttpConfig) Default() interface{} {
+	return &HttpConfig{
+		Addr: "8080",
+	}
 }
 
 type Route struct {

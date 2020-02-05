@@ -21,14 +21,22 @@ type ModelConfig struct {
 	Timeout int    `yaml:"timeout"`
 }
 
-type ModelService struct {
-	db *gorm.DB
+func (c *ModelConfig) ConfigName() string {
+	return ModelServiceName
 }
 
-func DefaultModelConfig() ModelConfig {
-	return ModelConfig{
+func (c *ModelConfig) Validate() error {
+	return nil
+}
+
+func (c *ModelConfig) Default() interface{} {
+	return &ModelConfig{
 		Enable: false,
 	}
+}
+
+type ModelService struct {
+	db *gorm.DB
 }
 
 func (s *ModelService) getConnStr(cfg *ModelConfig) string {
@@ -58,7 +66,7 @@ func (s *ModelService) Init(app Sptty) error {
 	cfg := ModelConfig{}
 	err := app.GetConfig(s.ServiceName(), &cfg)
 	if err != nil {
-		cfg = DefaultModelConfig()
+		return err
 	}
 
 	if !cfg.Enable {

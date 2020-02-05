@@ -20,7 +20,11 @@ func GetApp() *AppService {
 			config:   &ConfigService{},
 			log:      &LogService{},
 			services: map[string]Service{},
-			configs:  map[string]Config{},
+			configs: map[string]Config{
+				HttpServiceName:  &HttpConfig{},
+				ModelServiceName: &ModelConfig{},
+				LogServiceName:   &LogConfig{},
+			},
 		}
 
 		appService.http.SetOptions()

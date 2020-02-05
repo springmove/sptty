@@ -36,6 +36,23 @@ type LogConfig struct {
 	Rotate time.Duration `yaml:"rotate"`
 }
 
+func (c *LogConfig) ConfigName() string {
+	return LogServiceName
+}
+
+func (c *LogConfig) Validate() error {
+	return nil
+}
+
+func (c *LogConfig) Default() interface{} {
+	return &LogConfig{
+		File:   "STDOUT",
+		Level:  "DEBUG",
+		MaxAge: 2160 * time.Hour,
+		Rotate: 24 * time.Hour,
+	}
+}
+
 type LogService struct {
 	cfg LogConfig
 }
@@ -44,7 +61,7 @@ func (s *LogService) Init(app Sptty) error {
 	s.cfg = LogConfig{}
 	err := app.GetConfig(s.ServiceName(), &s.cfg)
 	if err != nil {
-		s.cfg = s.defaultConfig()
+		return err
 	}
 
 	s.setupLog()
@@ -85,15 +102,6 @@ func (s *LogService) Log(level LogLevel, msg string, tags ...string) {
 		log.WithField(LogTag, tags).Fatal(msg)
 	default:
 		log.WithField(LogTag, tags).Debug(msg)
-	}
-}
-
-func (s *LogService) defaultConfig() LogConfig {
-	return LogConfig{
-		File:   "STDOUT",
-		Level:  "DEBUG",
-		MaxAge: 2160 * time.Hour,
-		Rotate: 24 * time.Hour,
 	}
 }
 
