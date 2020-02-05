@@ -25,6 +25,12 @@ type ModelService struct {
 	db *gorm.DB
 }
 
+func DefaultModelConfig() ModelConfig {
+	return ModelConfig{
+		Enable: false,
+	}
+}
+
 func (s *ModelService) getConnStr(cfg *ModelConfig) string {
 	connStr := ""
 
@@ -52,7 +58,7 @@ func (s *ModelService) Init(app Sptty) error {
 	cfg := ModelConfig{}
 	err := app.GetConfig(s.ServiceName(), &cfg)
 	if err != nil {
-		return err
+		cfg = DefaultModelConfig()
 	}
 
 	if !cfg.Enable {

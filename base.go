@@ -10,7 +10,7 @@ type Services []Service
 type Sptty interface {
 	GetService(name string) Service
 	AddServices(services Services)
-	AddConfigs(cfg Configs)
+	AddConfigs(configs Configs)
 	GetConfig(name string, config interface{}) error
 	Http() Service
 	Model() Service
@@ -28,4 +28,5 @@ type Service interface {
 type Config interface {
 	ConfigName() string
 	Validate() error
+	Default() interface{}
 }

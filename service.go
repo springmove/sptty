@@ -41,7 +41,6 @@ type AppService struct {
 	model    *ModelService
 	config   *ConfigService
 	log      *LogService
-	Sptty
 }
 
 func (s *AppService) init() error {
@@ -57,14 +56,16 @@ func (s *AppService) init() error {
 		return err
 	}
 
-	Log(InfoLevel, fmt.Sprintf("init service: %s", s.model.ServiceName()), s.model.ServiceName())
+	Log(InfoLevel, fmt.Sprintf("Init Service: %s", s.model.ServiceName()), s.model.ServiceName())
 	if err := s.model.Init(s); err != nil {
+		Log(ErrorLevel, fmt.Sprintf("Init Service %s failed: %s", s.model.ServiceName(), err.Error()), s.model.ServiceName())
 		return err
 	}
 
 	for _, v := range s.services {
-		Log(InfoLevel, fmt.Sprintf("init service: %s", v.ServiceName()), v.ServiceName())
+		Log(InfoLevel, fmt.Sprintf("Init Service: %s", v.ServiceName()), v.ServiceName())
 		if err := v.Init(s); err != nil {
+			Log(ErrorLevel, fmt.Sprintf("Init Service %s failed: %s", v.ServiceName(), err.Error()), v.ServiceName())
 			return err
 		}
 	}
@@ -121,9 +122,15 @@ func (s *AppService) ConfFromFile(conf string) {
 }
 
 func (s *AppService) GetConfig(name string, config interface{}) error {
+	configDefine := s.configs[name]
+	if configDefine == nil {
+		return errors.New(" Config Not Found")
+	}
+
 	cfg := s.config.cfgs[name]
 	if cfg == nil {
-		return errors.New(" Config Not Found")
+		config = configDefine.Default()
+		return nil
 	}
 
 	body, _ := yaml.Marshal(cfg)
