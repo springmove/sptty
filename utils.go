@@ -1,8 +1,13 @@
 package sptty
 
 import (
+	"crypto/sha1"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"github.com/rs/xid"
+	"path"
 )
 
 type RequestError struct {
@@ -21,4 +26,37 @@ func NewRequestError(code string, msg string) []byte {
 
 func GenerateUID() string {
 	return xid.New().String()
+}
+
+func Sha1(data string) string {
+	s := sha1.New()
+	s.Write([]byte(data))
+	return hex.EncodeToString(s.Sum([]byte("")))
+}
+
+func Sha256(data string) string {
+	s := sha256.New()
+	s.Write([]byte(data))
+	return hex.EncodeToString(s.Sum([]byte("")))
+}
+
+func RandomFilename(rawFile string) string {
+	id := GenerateUID()
+	fileEx := path.Ext(path.Base(rawFile))
+
+	if fileEx == "" {
+		return id
+	} else {
+		return fmt.Sprintf("%s%s", id, fileEx)
+	}
+}
+
+func ArrayContains(arr []interface{}, s interface{}) bool {
+	for _, v := range arr {
+		if v == s {
+			return true
+		}
+	}
+
+	return false
 }
