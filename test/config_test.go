@@ -43,8 +43,8 @@ func TestConfig(t *testing.T) {
 	conf := path.Join(dir, "config.yml")
 
 	cfgs := sptty.Configs{
-		&cfg1{},
-		&cfg2{},
+		//&cfg1{},
+		//&cfg2{},
 	}
 
 	f, _ := os.Open(conf)

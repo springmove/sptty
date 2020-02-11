@@ -16,6 +16,7 @@ type Sptty interface {
 	Model() Service
 	AddRoute(method string, route string, handler context.Handler)
 	AddModel(values interface{})
+	I18NValue(name string, lang string) string
 }
 
 type Service interface {
