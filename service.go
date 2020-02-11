@@ -40,6 +40,11 @@ func Log(level LogLevel, msg string, tags ...string) {
 	app.log.Log(level, msg, tags...)
 }
 
+func I18NValue(name string, lang string) string {
+	app := GetApp()
+	return app.i18n.get(name, lang)
+}
+
 type AppService struct {
 	services map[string]Service
 	configs  map[string]Config
@@ -166,8 +171,4 @@ func (s *AppService) Model() Service {
 
 func (s *AppService) GetService(name string) Service {
 	return s.services[name]
-}
-
-func (s *AppService) I18NValue(name string, lang string) string {
-	return s.i18n.get(name, lang)
 }
