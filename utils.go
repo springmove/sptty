@@ -44,7 +44,7 @@ func RandomFilename(rawFile string) string {
 	id := GenerateUID()
 	fileEx := path.Ext(path.Base(rawFile))
 
-	if fileEx == "" {
+	if fileEx == "" || fileEx == "." {
 		return id
 	} else {
 		return fmt.Sprintf("%s%s", id, fileEx)
