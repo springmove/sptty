@@ -102,7 +102,8 @@ func (s *AppService) release() {
 }
 
 func (s *AppService) Sptting() {
-	if s.init() != nil {
+	if err := s.init(); err != nil {
+		fmt.Println(err.Error())
 		return
 	}
 
