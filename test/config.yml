@@ -12,4 +12,4 @@ cfg2:
     k: v123
 
 http:
-  addr: :8082
+  addr: :10021

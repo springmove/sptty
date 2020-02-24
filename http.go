@@ -1,8 +1,9 @@
 package sptty
 
 import (
-	"github.com/kataras/iris"
-	"github.com/kataras/iris/context"
+	"github.com/iris-contrib/middleware/cors"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/context"
 	"gopkg.in/resty.v1"
 	"time"
 )
@@ -80,12 +81,13 @@ func CreateHttpClient(cfg *HttpClientConfig) *resty.Client {
 }
 
 func (s *HttpService) SetOptions() {
-	crs := func(ctx iris.Context) {
-		ctx.Header("Access-Control-Allow-Origin", "*")
-		ctx.Header("Access-Control-Allow-Credentials", "true")
-		ctx.Header("Access-Control-Allow-Headers", "*")
-		ctx.Header("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS")
-	}
+
+	crs := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowCredentials: true,
+		AllowedHeaders:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"},
+	})
 
 	s.party = s.app.Party(BaseApiRoute, crs).AllowMethods(iris.MethodOptions)
 }

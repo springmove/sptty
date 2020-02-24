@@ -2,7 +2,7 @@ package test
 
 import (
 	"fmt"
-	"github.com/kataras/iris"
+	"github.com/kataras/iris/v12"
 	"github.com/linshenqi/sptty"
 	"os"
 	"path"
