@@ -3,9 +3,13 @@ cfg1:
   key2: 8
   key3_wefli2: 23h
 
+
 cfg2:
   key4:
     - 1
     - 2
   key5:
     k: v123
+
+http:
+  addr: :8082

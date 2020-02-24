@@ -85,7 +85,6 @@ func (s *HttpService) SetOptions() {
 		ctx.Header("Access-Control-Allow-Credentials", "true")
 		ctx.Header("Access-Control-Allow-Headers", "*")
 		ctx.Header("Access-Control-Allow-Methods", "GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS")
-		ctx.Next()
 	}
 
 	s.party = s.app.Party(BaseApiRoute, crs).AllowMethods(iris.MethodOptions)
