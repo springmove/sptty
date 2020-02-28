@@ -1,11 +1,13 @@
 package sptty
 
 import (
+	"io/ioutil"
+	"time"
+
 	"github.com/iris-contrib/middleware/cors"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"gopkg.in/resty.v1"
-	"time"
 )
 
 const (
@@ -14,7 +16,8 @@ const (
 )
 
 type HttpConfig struct {
-	Addr string `yaml:"addr"`
+	Addr   string `yaml:"addr"`
+	ApiDoc string `yaml:"api_doc"`
 }
 
 func (c *HttpConfig) ConfigName() string {
@@ -27,7 +30,8 @@ func (c *HttpConfig) Validate() error {
 
 func (c *HttpConfig) Default() interface{} {
 	return &HttpConfig{
-		Addr: "8080",
+		Addr:   "8080",
+		ApiDoc: "",
 	}
 }
 
@@ -97,6 +101,24 @@ func (s *HttpService) Init(app Sptty) error {
 	if err := app.GetConfig(s.ServiceName(), &cfg); err != nil {
 		return err
 	}
+
+	s.AddRoute("GET", "healthz", func(ctx iris.Context) {
+		ctx.StatusCode(iris.StatusOK)
+	})
+
+	s.AddRoute("GET", "/healthz", func(ctx iris.Context) {
+		ctx.StatusCode(iris.StatusOK)
+	})
+
+	s.AddRoute("GET", "/apidoc", func(ctx iris.Context) {
+		ctx.Header("content-type", "application/json")
+		f, err := ioutil.ReadFile(cfg.ApiDoc)
+		if err != nil {
+			ctx.StatusCode(iris.StatusNoContent)
+			return
+		}
+		_, _ = ctx.Write(f)
+	})
 
 	return s.app.Run(iris.Addr(cfg.Addr), iris.WithoutInterruptHandler)
 }
