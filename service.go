@@ -12,6 +12,10 @@ import (
 var appService *AppService = nil
 var appTag string = ""
 
+func SetTag(tag string) {
+	appTag = tag
+}
+
 func GetApp() *AppService {
 	if appService == nil {
 		appService = &AppService{
@@ -174,8 +178,4 @@ func (s *AppService) Model() Service {
 
 func (s *AppService) GetService(name string) Service {
 	return s.services[name]
-}
-
-func (s *AppService) SetTag(tag string) {
-	appTag = tag
 }
