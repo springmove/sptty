@@ -6,8 +6,9 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"github.com/rs/xid"
 	"path"
+
+	"github.com/rs/xid"
 )
 
 type RequestError struct {

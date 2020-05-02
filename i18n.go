@@ -90,12 +90,12 @@ func (s *I18NService) load() error {
 func (s *I18NService) get(name string, lang string) string {
 	target, exist := s.trans[name]
 	if !exist {
-		return ""
+		return name
 	}
 
 	langValue, exist := target[lang]
 	if !exist {
-		return ""
+		return name
 	}
 
 	return langValue

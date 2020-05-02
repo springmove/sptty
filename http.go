@@ -11,12 +11,13 @@ import (
 )
 
 const (
-	BaseApiRoute    = "/api/v1"
+	BaseApiRoute    = "/api"
 	HttpServiceName = "http"
 )
 
 type HttpConfig struct {
 	Addr   string `yaml:"addr"`
+	Tag    string `yaml:"tag"`
 	ApiDoc string `yaml:"api_doc"`
 }
 
@@ -58,6 +59,7 @@ type HttpClientConfig struct {
 type HttpService struct {
 	app   *iris.Application
 	party iris.Party
+	cfg   HttpConfig
 }
 
 func DefaultHttpClientConfig() *HttpClientConfig {
@@ -85,6 +87,10 @@ func CreateHttpClient(cfg *HttpClientConfig) *resty.Client {
 }
 
 func (s *HttpService) SetOptions() {
+	tag := s.cfg.Tag
+	if tag == "" {
+		tag = BaseApiRoute
+	}
 
 	crs := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},
@@ -93,12 +99,11 @@ func (s *HttpService) SetOptions() {
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS", "HEAD", "PATCH"},
 	})
 
-	s.party = s.app.Party(BaseApiRoute, crs).AllowMethods(iris.MethodOptions)
+	s.party = s.app.Party(tag, crs).AllowMethods(iris.MethodOptions)
 }
 
 func (s *HttpService) Init(app Sptty) error {
-	cfg := HttpConfig{}
-	if err := app.GetConfig(s.ServiceName(), &cfg); err != nil {
+	if err := app.GetConfig(s.ServiceName(), &s.cfg); err != nil {
 		return err
 	}
 
@@ -112,7 +117,7 @@ func (s *HttpService) Init(app Sptty) error {
 
 	s.AddRoute("GET", "/apidoc", func(ctx iris.Context) {
 		ctx.Header("content-type", "application/json")
-		f, err := ioutil.ReadFile(cfg.ApiDoc)
+		f, err := ioutil.ReadFile(s.cfg.ApiDoc)
 		if err != nil {
 			ctx.StatusCode(iris.StatusNoContent)
 			return
@@ -120,7 +125,7 @@ func (s *HttpService) Init(app Sptty) error {
 		_, _ = ctx.Write(f)
 	})
 
-	return s.app.Run(iris.Addr(cfg.Addr), iris.WithoutInterruptHandler)
+	return s.app.Run(iris.Addr(s.cfg.Addr), iris.WithoutInterruptHandler)
 }
 
 func (s *HttpService) Release() {
