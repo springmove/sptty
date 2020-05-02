@@ -17,7 +17,6 @@ const (
 
 type HttpConfig struct {
 	Addr   string `yaml:"addr"`
-	Tag    string `yaml:"tag"`
 	ApiDoc string `yaml:"api_doc"`
 }
 
@@ -87,7 +86,7 @@ func CreateHttpClient(cfg *HttpClientConfig) *resty.Client {
 }
 
 func (s *HttpService) SetOptions() {
-	tag := s.cfg.Tag
+	tag := appTag
 	if tag == "" {
 		tag = BaseApiRoute
 	}
@@ -106,10 +105,6 @@ func (s *HttpService) Init(app Sptty) error {
 	if err := app.GetConfig(s.ServiceName(), &s.cfg); err != nil {
 		return err
 	}
-
-	s.AddRoute("GET", "healthz", func(ctx iris.Context) {
-		ctx.StatusCode(iris.StatusOK)
-	})
 
 	s.AddRoute("GET", "/healthz", func(ctx iris.Context) {
 		ctx.StatusCode(iris.StatusOK)

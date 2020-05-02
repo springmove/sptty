@@ -3,12 +3,14 @@ package sptty
 import (
 	"errors"
 	"fmt"
+
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"gopkg.in/yaml.v2"
 )
 
 var appService *AppService = nil
+var appTag string = ""
 
 func GetApp() *AppService {
 	if appService == nil {
@@ -172,4 +174,8 @@ func (s *AppService) Model() Service {
 
 func (s *AppService) GetService(name string) Service {
 	return s.services[name]
+}
+
+func (s *AppService) SetTag(tag string) {
+	appTag = tag
 }
