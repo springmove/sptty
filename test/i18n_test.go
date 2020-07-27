@@ -22,4 +22,11 @@ func TestI18N(t *testing.T) {
 	json.Unmarshal(content, &lang)
 
 	fmt.Println(lang)
+
+	files, err := ioutil.ReadDir("./")
+	if err != nil {
+		return
+	}
+
+	fmt.Println(files)
 }

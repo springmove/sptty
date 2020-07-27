@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
+	"path"
 )
 
 const (
@@ -26,7 +27,7 @@ const (
 )
 
 type I18NConfig struct {
-	File string `yaml:"file"`
+	Path string `yaml:"path"`
 }
 
 func (c *I18NConfig) ConfigName() string {
@@ -39,7 +40,7 @@ func (c *I18NConfig) Validate() error {
 
 func (c *I18NConfig) Default() interface{} {
 	return &I18NConfig{
-		File: "",
+		Path: "",
 	}
 }
 
@@ -49,6 +50,7 @@ type I18NService struct {
 }
 
 func (s *I18NService) Init(app Sptty) error {
+
 	if err := app.GetConfig(s.ServiceName(), &s.cfg); err != nil {
 		return err
 	}
@@ -68,11 +70,26 @@ func (s *I18NService) ServiceName() string {
 }
 
 func (s *I18NService) load() error {
-	if s.cfg.File == "" {
+	if s.cfg.Path == "" {
 		return nil
 	}
 
-	f, err := os.Open(s.cfg.File)
+	files, err := ioutil.ReadDir(s.cfg.Path)
+	if err != nil {
+		return err
+	}
+
+	for _, v := range files {
+		if err := s.loadFileContent(path.Join(s.cfg.Path, v.Name())); err != nil {
+			continue
+		}
+	}
+
+	return nil
+}
+
+func (s *I18NService) loadFileContent(filepath string) error {
+	f, err := os.Open(filepath)
 	defer f.Close()
 
 	if err != nil {
@@ -88,6 +105,10 @@ func (s *I18NService) load() error {
 }
 
 func (s *I18NService) get(name string, lang string) string {
+	if s.trans == nil {
+		return name
+	}
+
 	target, exist := s.trans[name]
 	if !exist {
 		return name
