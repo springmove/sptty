@@ -1,9 +1,10 @@
 package sptty
 
 import (
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
+
+	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -51,4 +52,20 @@ func (s *ConfigService) SetConfPath(conf string) {
 
 func (s *ConfigService) ServiceName() string {
 	return ConfigServiceName
+}
+
+type BaseConfig struct {
+	Config
+}
+
+func (s *BaseConfig) ConfigName() string {
+	return ""
+}
+
+func (s *BaseConfig) Validate() error {
+	return nil
+}
+
+func (s *BaseConfig) Default() interface{} {
+	return &BaseConfig{}
 }

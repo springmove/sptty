@@ -183,3 +183,21 @@ func (s *AppService) GetService(name string) Service {
 
 	return nil
 }
+
+type BaseService struct {
+	Service
+}
+
+func (s *BaseService) Init(app Sptty) error {
+	return nil
+}
+
+func (s *BaseService) Release() {}
+
+func (s *BaseService) Enable() bool {
+	return true
+}
+
+func (s *BaseService) ServiceName() string {
+	return ""
+}
