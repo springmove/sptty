@@ -1,6 +1,7 @@
 package sptty
 
 import (
+	"encoding/json"
 	"io/ioutil"
 	"time"
 
@@ -11,13 +12,14 @@ import (
 )
 
 const (
-	BaseApiRoute    = "/api"
+	DefaultAPITag   = "/api"
 	HttpServiceName = "http"
 )
 
 type HttpConfig struct {
 	Addr   string `yaml:"addr"`
 	ApiDoc string `yaml:"api_doc"`
+	Tag    string `yaml:"tag"`
 }
 
 func (c *HttpConfig) ConfigName() string {
@@ -86,9 +88,12 @@ func CreateHttpClient(cfg *HttpClientConfig) *resty.Client {
 }
 
 func (s *HttpService) SetOptions() {
-	tag := appTag
-	if tag == "" {
-		tag = BaseApiRoute
+	tag := DefaultAPITag
+
+	if appTag != "" {
+		tag = appTag
+	} else if s.cfg.Tag != "" {
+		tag = s.cfg.Tag
 	}
 
 	crs := cors.New(cors.Options{
@@ -137,4 +142,32 @@ func (s *HttpService) AddRoute(method string, route string, handler context.Hand
 
 func (s *HttpService) ServiceName() string {
 	return HttpServiceName
+}
+
+func SimpleResponse(ctx iris.Context, code int, body interface{}, headers map[string]string) error {
+	ctx.StatusCode(code)
+
+	if headers == nil {
+		ctx.ResponseWriter().Header().Add("content-type", "application/json")
+	} else {
+		for k, v := range headers {
+			ctx.ResponseWriter().Header().Add(k, v)
+		}
+	}
+
+	if body == nil {
+		return nil
+	}
+
+	data, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
+
+	_, err = ctx.Write(data)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
