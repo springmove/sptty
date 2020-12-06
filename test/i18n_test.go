@@ -19,7 +19,7 @@ func TestI18N(t *testing.T) {
 	content, _ := ioutil.ReadAll(f)
 
 	lang := map[string]map[string]string{}
-	json.Unmarshal(content, &lang)
+	_ = json.Unmarshal(content, &lang)
 
 	fmt.Println(lang)
 

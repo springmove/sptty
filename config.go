@@ -19,7 +19,9 @@ type ConfigService struct {
 func (s *ConfigService) Init(app Sptty) error {
 
 	f, err := os.Open(s.confPath)
-	defer f.Close()
+	defer func() {
+		_ = f.Close()
+	}()
 
 	if err != nil {
 		return err
