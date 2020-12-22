@@ -2,6 +2,8 @@ package sptty
 
 import (
 	"fmt"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
@@ -106,4 +108,10 @@ func (s *ModelService) Enable() bool {
 
 func (s *ModelService) ServiceName() string {
 	return ModelServiceName
+}
+
+type SimpleModelBase struct {
+	ID      string     `gorm:"size:32;primary_key" json:"id"`
+	Created *time.Time `json:"created,omitempty"`
+	Deleted bool       `json:"-"`
 }
