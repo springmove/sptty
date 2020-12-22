@@ -6,7 +6,10 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"net/http"
 	"path"
+	"strings"
 
 	"github.com/rs/xid"
 )
@@ -60,4 +63,30 @@ func ArrayContains(arr []interface{}, s interface{}) bool {
 	}
 
 	return false
+}
+
+// param1: content body
+// param2: mime type
+func GetUrlImage(url string) ([]byte, string, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, "", err
+	}
+
+	defer func() {
+		_ = resp.Body.Close()
+	}()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return nil, "", err
+	}
+
+	mime := resp.Header.Get("content-type")
+	vals := strings.Split(mime, "/")
+	if len(vals) > 1 {
+		mime = vals[1]
+	}
+
+	return body, mime, nil
 }
