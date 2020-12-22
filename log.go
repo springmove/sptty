@@ -57,7 +57,7 @@ type LogService struct {
 	cfg LogConfig
 }
 
-func (s *LogService) Init(app Sptty) error {
+func (s *LogService) Init(app ISptty) error {
 	s.cfg = LogConfig{}
 	err := app.GetConfig(s.ServiceName(), &s.cfg)
 	if err != nil {

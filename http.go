@@ -106,7 +106,7 @@ func (s *HttpService) SetOptions() {
 	s.party = s.app.Party(tag, crs).AllowMethods(iris.MethodOptions)
 }
 
-func (s *HttpService) Init(app Sptty) error {
+func (s *HttpService) Init(app ISptty) error {
 	if err := app.GetConfig(s.ServiceName(), &s.cfg); err != nil {
 		return err
 	}

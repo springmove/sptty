@@ -27,7 +27,7 @@ func GetApp() *AppService {
 			log:      &LogService{},
 			i18n:     &I18NService{},
 			services: Services{},
-			configs: map[string]Config{
+			configs: map[string]IConfig{
 				HttpServiceName:  &HttpConfig{},
 				ModelServiceName: &ModelConfig{},
 				LogServiceName:   &LogConfig{},
@@ -53,7 +53,7 @@ func I18NValue(name string, lang string) string {
 
 type AppService struct {
 	services Services
-	configs  map[string]Config
+	configs  map[string]IConfig
 	http     *HttpService
 	model    *ModelService
 	config   *ConfigService
@@ -166,15 +166,15 @@ func (s *AppService) AddModel(values interface{}) {
 	s.model.AddModel(values)
 }
 
-func (s *AppService) Http() Service {
+func (s *AppService) Http() IService {
 	return s.http
 }
 
-func (s *AppService) Model() Service {
+func (s *AppService) Model() IService {
 	return s.model
 }
 
-func (s *AppService) GetService(name string) Service {
+func (s *AppService) GetService(name string) IService {
 	for k, v := range s.services {
 		if v.ServiceName() == name {
 			return s.services[k]
@@ -185,10 +185,10 @@ func (s *AppService) GetService(name string) Service {
 }
 
 type BaseService struct {
-	Service
+	IService
 }
 
-func (s *BaseService) Init(app Sptty) error {
+func (s *BaseService) Init(app ISptty) error {
 	return nil
 }
 

@@ -59,7 +59,7 @@ func (s *ModelService) getConnStr(cfg *ModelConfig) string {
 	return connStr
 }
 
-func (s *ModelService) Init(app Sptty) error {
+func (s *ModelService) Init(app ISptty) error {
 
 	s.db = nil
 

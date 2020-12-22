@@ -17,7 +17,7 @@ type pkg struct {
 	ID       string `json:"id"`
 }
 
-func (s *testHttp) Init(app sptty.Sptty) error {
+func (s *testHttp) Init(app sptty.ISptty) error {
 	app.AddRoute("POST", "/auth", func(ctx iris.Context) {
 		var req pkg
 		if err := ctx.ReadJSON(&req); err != nil {

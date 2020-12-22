@@ -4,28 +4,28 @@ import (
 	"github.com/kataras/iris/v12/context"
 )
 
-type Configs []Config
-type Services []Service
+type Configs []IConfig
+type Services []IService
 
-type Sptty interface {
-	GetService(name string) Service
+type ISptty interface {
+	GetService(name string) IService
 	AddServices(services Services)
 	AddConfigs(configs Configs)
 	GetConfig(name string, config interface{}) error
-	Http() Service
-	Model() Service
+	Http() IService
+	Model() IService
 	AddRoute(method string, route string, handler context.Handler)
 	AddModel(values interface{})
 }
 
-type Service interface {
-	Init(app Sptty) error
+type IService interface {
+	Init(app ISptty) error
 	Release()
 	Enable() bool
 	ServiceName() string
 }
 
-type Config interface {
+type IConfig interface {
 	ConfigName() string
 	Validate() error
 	Default() interface{}
