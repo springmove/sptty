@@ -144,12 +144,15 @@ func (s *HttpService) ServiceName() string {
 	return HttpServiceName
 }
 
-func SimpleResponse(ctx iris.Context, code int, body interface{}, headers map[string]string) error {
+func SimpleResponse(ctx iris.Context, code int, body interface{}, headers ...map[string]string) error {
 	ctx.ResponseWriter().Header().Add("content-type", "application/json")
 	ctx.StatusCode(code)
 
-	for k, v := range headers {
-		ctx.ResponseWriter().Header().Add(k, v)
+	if len(headers) > 0 {
+		h := headers[0]
+		for k, v := range h {
+			ctx.ResponseWriter().Header().Add(k, v)
+		}
 	}
 
 	if body == nil {
