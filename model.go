@@ -111,7 +111,12 @@ func (s *ModelService) ServiceName() string {
 }
 
 type SimpleModelBase struct {
-	ID      string     `gorm:"size:32;primary_key" json:"id"`
-	Created *time.Time `json:"created,omitempty"`
-	Deleted bool       `json:"-"`
+	ID      string    `gorm:"size:32;primary_key" json:"id"`
+	Created time.Time `json:"created,omitempty"`
+	Deleted *bool     `json:"deleted,omitempty"`
+}
+
+func (s *SimpleModelBase) Serialize() *SimpleModelBase {
+	s.Created = s.Created.UTC()
+	return s
 }
