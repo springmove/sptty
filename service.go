@@ -35,7 +35,7 @@ func GetApp() *AppService {
 			},
 		}
 
-		appService.http.SetOptions()
+		// appService.http.SetOptions()
 	}
 
 	return appService

@@ -111,6 +111,8 @@ func (s *HttpService) Init(app ISptty) error {
 		return err
 	}
 
+	s.SetOptions()
+
 	s.AddRoute("GET", "/healthz", func(ctx iris.Context) {
 		ctx.StatusCode(iris.StatusOK)
 	})
