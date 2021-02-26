@@ -34,8 +34,6 @@ func GetApp() *AppService {
 				I18NServiceName:  &I18NConfig{},
 			},
 		}
-
-		// appService.http.SetOptions()
 	}
 
 	return appService
@@ -78,6 +76,10 @@ func (s *AppService) init() error {
 		return err
 	}
 
+	if err := s.http.Init(s); err != nil {
+		return err
+	}
+
 	Log(InfoLevel, fmt.Sprintf("Init Service: %s", s.model.ServiceName()), s.model.ServiceName())
 	if err := s.model.Init(s); err != nil {
 		Log(ErrorLevel, fmt.Sprintf("Init Service %s failed: %s", s.model.ServiceName(), err.Error()), s.model.ServiceName())
@@ -92,7 +94,7 @@ func (s *AppService) init() error {
 		}
 	}
 
-	if err := s.http.Init(s); err != nil {
+	if err := s.http.Run(); err != nil {
 		return err
 	}
 

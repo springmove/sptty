@@ -127,6 +127,10 @@ func (s *HttpService) Init(app ISptty) error {
 		_, _ = ctx.Write(f)
 	})
 
+	return nil
+}
+
+func (s *HttpService) Run() error {
 	return s.app.Run(iris.Addr(s.cfg.Addr), iris.WithoutInterruptHandler)
 }
 
