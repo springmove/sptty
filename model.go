@@ -110,13 +110,7 @@ func (s *ModelService) ServiceName() string {
 	return ModelServiceName
 }
 
-type ISimpleModelBase interface {
-	Init() *SimpleModelBase
-}
-
 type SimpleModelBase struct {
-	ISimpleModelBase
-
 	ID      string    `gorm:"size:32;primary_key" json:"id"`
 	Created time.Time `json:"created,omitempty"`
 	Deleted bool      `json:"deleted,omitempty"`
@@ -136,7 +130,7 @@ func (s *SimpleModelBase) Serialize() *SimpleModelBase {
 	return s
 }
 
-func UpdateModel(db *gorm.DB, model ISimpleModelBase) error {
+func UpdateModel(db *gorm.DB, model interface{}) error {
 	if err := db.Save(model).Error; err != nil {
 		return err
 	}
