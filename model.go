@@ -110,13 +110,37 @@ func (s *ModelService) ServiceName() string {
 	return ModelServiceName
 }
 
+type ISimpleModelBase interface {
+	Init() *SimpleModelBase
+	Serialize() *SimpleModelBase
+}
+
 type SimpleModelBase struct {
+	ISimpleModelBase
+
 	ID      string    `gorm:"size:32;primary_key" json:"id"`
 	Created time.Time `json:"created,omitempty"`
 	Deleted bool      `json:"deleted,omitempty"`
 }
 
+func (s *SimpleModelBase) Init() *SimpleModelBase {
+	s.ID = GenerateUID()
+	s.Created = time.Now().UTC()
+	s.Deleted = false
+
+	return s
+}
+
 func (s *SimpleModelBase) Serialize() *SimpleModelBase {
 	s.Created = s.Created.UTC()
+
 	return s
+}
+
+func UpdateModel(db *gorm.DB, model ISimpleModelBase) error {
+	if err := db.Save(model).Error; err != nil {
+		return err
+	}
+
+	return nil
 }
