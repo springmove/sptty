@@ -112,7 +112,6 @@ func (s *ModelService) ServiceName() string {
 
 type ISimpleModelBase interface {
 	Init() *SimpleModelBase
-	Serialize() *SimpleModelBase
 }
 
 type SimpleModelBase struct {
