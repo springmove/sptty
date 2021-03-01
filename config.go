@@ -83,7 +83,16 @@ func (s *ConfigService) patchConfigWithEnv(key string, value string) {
 				step = "arr"
 			default:
 				// value
-				obj[k] = value
+				switch typ {
+				case reflect.Bool:
+					obj[k], _ = strconv.ParseBool(value)
+				case reflect.Int:
+					obj[k], _ = strconv.ParseInt(value, 10, 32)
+				case reflect.Float32:
+					obj[k], _ = strconv.ParseFloat(value, 32)
+				case reflect.String:
+					obj[k] = value
+				}
 			}
 		case "arr":
 			index, err := strconv.Atoi(k)
@@ -106,7 +115,16 @@ func (s *ConfigService) patchConfigWithEnv(key string, value string) {
 				step = "arr"
 			default:
 				// value
-				arr[index] = value
+				switch typ {
+				case reflect.Bool:
+					arr[index], _ = strconv.ParseBool(value)
+				case reflect.Int:
+					arr[index], _ = strconv.ParseInt(value, 10, 32)
+				case reflect.Float32:
+					arr[index], _ = strconv.ParseFloat(value, 32)
+				case reflect.String:
+					arr[index] = value
+				}
 			}
 		}
 	}
