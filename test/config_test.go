@@ -4,24 +4,23 @@ import (
 	"os"
 	"path"
 	"testing"
-	"time"
 
 	"github.com/linshenqi/sptty"
 )
 
-type cfg1 struct {
-	Key1 string        `yaml:"key1"`
-	Key2 int           `yaml:"key2"`
-	Key3 time.Duration `yaml:"key3_wefli2"`
-}
+// type cfg1 struct {
+// 	Key1 string        `yaml:"key1"`
+// 	Key2 int           `yaml:"key2"`
+// 	Key3 time.Duration `yaml:"key3_wefli2"`
+// }
 
-func (c1 *cfg1) ConfigName() string {
-	return ""
-}
+// func (c1 *cfg1) ConfigName() string {
+// 	return ""
+// }
 
-func (c1 *cfg1) Validate() error {
-	return nil
-}
+// func (c1 *cfg1) Validate() error {
+// 	return nil
+// }
 
 // type cfg2 struct {
 // 	Key4 []int             `yaml:"key4"`
@@ -72,6 +71,5 @@ func TestConfig(t *testing.T) {
 	os.Setenv("sptty.cfg2.key4.0", "33")
 	os.Setenv("sptty.cfg1.key3_wefli2", "10")
 
-	srv.Init(nil)
-	
+	_ = srv.Init(nil)
 }

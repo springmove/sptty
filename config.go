@@ -1,7 +1,6 @@
 package sptty
 
 import (
-	"fmt"
 	"io/ioutil"
 	"os"
 	"reflect"
@@ -44,11 +43,10 @@ func (s *ConfigService) Init(app ISptty) error {
 	}
 
 	s.patchConfigsWithEnvs()
-	fmt.Println(s.cfgs)
 	return nil
 }
 
-func GetTargetEnvs() map[string]string {
+func getTargetEnvs() map[string]string {
 	rt := map[string]string{}
 	for _, env := range os.Environ() {
 		vals := strings.SplitN(env, "=", 2)
@@ -115,7 +113,7 @@ func (s *ConfigService) patchConfigWithEnv(key string, value string) {
 }
 
 func (s *ConfigService) patchConfigsWithEnvs() {
-	envs := GetTargetEnvs()
+	envs := getTargetEnvs()
 	for k, v := range envs {
 		s.patchConfigWithEnv(k, v)
 	}
