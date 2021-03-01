@@ -1,19 +1,25 @@
 package sptty
 
 import (
+	"fmt"
 	"io/ioutil"
 	"os"
+	"reflect"
+	"strconv"
+	"strings"
 
 	"gopkg.in/yaml.v2"
 )
 
 const (
 	ConfigServiceName = "config"
+	ConfigEnvPrefix   = "sptty"
+	ConfigEnvKeyDiv   = "."
 )
 
 type ConfigService struct {
 	confPath string
-	cfgs     map[string]interface{}
+	cfgs     map[interface{}]interface{}
 }
 
 func (s *ConfigService) Init(app ISptty) error {
@@ -37,7 +43,82 @@ func (s *ConfigService) Init(app ISptty) error {
 		return err
 	}
 
+	s.patchConfigsWithEnvs()
+	fmt.Println(s.cfgs)
 	return nil
+}
+
+func GetTargetEnvs() map[string]string {
+	rt := map[string]string{}
+	for _, env := range os.Environ() {
+		vals := strings.SplitN(env, "=", 2)
+		if strings.Contains(vals[0], ConfigEnvPrefix) {
+			rt[strings.TrimSpace(vals[0])] = strings.TrimSpace(vals[1])
+		}
+	}
+
+	return rt
+}
+
+func (s *ConfigService) patchConfigWithEnv(key string, value string) {
+	keys := strings.Split(key, ConfigEnvKeyDiv)
+	l := len(keys)
+	step := "obj"
+	var obj map[interface{}]interface{} = s.cfgs
+	var arr []interface{}
+	for i := 1; i < l; i++ {
+
+		k := keys[i]
+		switch step {
+		case "obj":
+			val, exist := obj[k]
+			if !exist {
+				return
+			}
+			typ := reflect.TypeOf(val).Kind()
+			switch typ {
+			case reflect.Map:
+				obj = val.(map[interface{}]interface{})
+				step = "obj"
+			case reflect.Slice:
+				arr = val.([]interface{})
+				step = "arr"
+			default:
+				// value
+				obj[k] = value
+			}
+		case "arr":
+			index, err := strconv.Atoi(k)
+			if err != nil {
+				return
+			}
+
+			if index >= len(arr) {
+				return
+			}
+
+			val := arr[index]
+			typ := reflect.TypeOf(val).Kind()
+			switch typ {
+			case reflect.Map:
+				obj = val.(map[interface{}]interface{})
+				step = "obj"
+			case reflect.Slice:
+				arr = val.([]interface{})
+				step = "arr"
+			default:
+				// value
+				arr[index] = value
+			}
+		}
+	}
+}
+
+func (s *ConfigService) patchConfigsWithEnvs() {
+	envs := GetTargetEnvs()
+	for k, v := range envs {
+		s.patchConfigWithEnv(k, v)
+	}
 }
 
 func (s *ConfigService) Release() {

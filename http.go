@@ -130,7 +130,7 @@ func (s *HttpService) Init(app ISptty) error {
 	return nil
 }
 
-func (s *HttpService) Run() error {
+func (s *HttpService) run() error {
 	return s.app.Run(iris.Addr(s.cfg.Addr), iris.WithoutInterruptHandler)
 }
 

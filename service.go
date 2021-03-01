@@ -94,7 +94,7 @@ func (s *AppService) init() error {
 		}
 	}
 
-	if err := s.http.Run(); err != nil {
+	if err := s.http.run(); err != nil {
 		return err
 	}
 
