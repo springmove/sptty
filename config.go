@@ -13,7 +13,7 @@ import (
 const (
 	ConfigServiceName = "config"
 	ConfigEnvPrefix   = "sptty"
-	ConfigEnvKeyDiv   = "."
+	ConfigEnvKeyDiv   = "_"
 )
 
 type ConfigService struct {
