@@ -2,6 +2,7 @@ package sptty
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 
 	"github.com/kataras/iris/v12"
@@ -142,6 +143,12 @@ func (s *AppService) validateConfigs() error {
 
 func (s *AppService) ConfFromFile(conf string) {
 	s.config.SetConfPath(conf)
+}
+
+func (s *AppService) LoadConfFromFile() {
+	cfg := flag.String("config", "./config.yml", "--config")
+	flag.Parse()
+	s.ConfFromFile(*cfg)
 }
 
 func (s *AppService) GetConfig(name string, config interface{}) error {
