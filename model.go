@@ -114,7 +114,7 @@ type SimpleModelBase struct {
 	ID        string    `gorm:"size:32;primary_key" json:"id"`
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	Deleted   bool      `json:"deleted,omitempty"`
-	DeletedAt time.Time `json:"deleted_at,omitempty"`
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 func (s *SimpleModelBase) Init() *SimpleModelBase {
@@ -127,7 +127,7 @@ func (s *SimpleModelBase) Init() *SimpleModelBase {
 
 func (s *SimpleModelBase) Serialize() *SimpleModelBase {
 	s.CreatedAt = s.CreatedAt.UTC()
-	s.DeletedAt = s.DeletedAt.UTC()
+	s.UpdatedAt = s.UpdatedAt.UTC()
 
 	return s
 }
