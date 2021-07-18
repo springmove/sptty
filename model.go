@@ -4,12 +4,18 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 const (
 	ModelServiceName = "model"
+
+	DBPostgres = "postgres"
+	DBMysql    = "mysql"
+
+	DefaultMysqlCharset = "utf8mb4"
 )
 
 type ModelConfig struct {
@@ -21,6 +27,9 @@ type ModelConfig struct {
 	Host    string `yaml:"host"`
 	Port    int    `yaml:"port"`
 	Timeout int    `yaml:"timeout"`
+
+	// for mysql
+	Charset string `yaml:"charset"`
 }
 
 func (c *ModelConfig) ConfigName() string {
@@ -45,7 +54,8 @@ func (s *ModelService) getConnStr(cfg *ModelConfig) string {
 	connStr := ""
 
 	switch cfg.Source {
-	case "postgres":
+	case DBPostgres:
+		// ex: host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable TimeZone=Asia/Shanghai
 		connStr = fmt.Sprintf("host=%s port=%d user=%s dbname=%s password=%s connect_timeout=%d sslmode=disable",
 			cfg.Host,
 			cfg.Port,
@@ -53,6 +63,20 @@ func (s *ModelService) getConnStr(cfg *ModelConfig) string {
 			cfg.Name,
 			cfg.Pwd,
 			cfg.Timeout)
+
+	case DBMysql:
+		if cfg.Charset == "" {
+			cfg.Charset = DefaultMysqlCharset
+		}
+
+		// ex: user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local
+		connStr = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=%s&parseTime=True&loc=Local",
+			cfg.User,
+			cfg.Pwd,
+			cfg.Host,
+			cfg.Port,
+			cfg.Name,
+			cfg.Charset)
 
 	default:
 		return connStr
@@ -63,11 +87,11 @@ func (s *ModelService) getConnStr(cfg *ModelConfig) string {
 
 func (s *ModelService) Init(app ISptty) error {
 
+	var err error
 	s.db = nil
 
 	cfg := ModelConfig{}
-	err := app.GetConfig(s.ServiceName(), &cfg)
-	if err != nil {
+	if err = app.GetConfig(s.ServiceName(), &cfg); err != nil {
 		return err
 	}
 
@@ -76,19 +100,30 @@ func (s *ModelService) Init(app ISptty) error {
 		return nil
 	}
 
-	_db, err := gorm.Open(cfg.Source, s.getConnStr(&cfg))
-	if err != nil {
-		return err
-	}
+	switch cfg.Source {
+	case DBPostgres:
+		s.db, err = gorm.Open(postgres.Open(s.getConnStr(&cfg)), &gorm.Config{})
+		if err != nil {
+			return err
+		}
 
-	s.db = _db
+	case DBMysql:
+		s.db, err = gorm.Open(mysql.Open(s.getConnStr(&cfg)), &gorm.Config{})
+		if err != nil {
+			return err
+		}
+	default:
+		return fmt.Errorf("Source Not Supported")
+	}
 
 	return nil
 }
 
 func (s *ModelService) AddModel(values interface{}) {
 	if s.db != nil {
-		s.db.AutoMigrate(values)
+		if err := s.db.AutoMigrate(values); err != nil {
+			Log(ErrorLevel, fmt.Sprintf("AutoMigrate Failed: %s", err.Error()), s.ServiceName())
+		}
 	}
 }
 
@@ -98,7 +133,7 @@ func (s *ModelService) DB() *gorm.DB {
 
 func (s *ModelService) Release() {
 	if s.db != nil {
-		_ = s.db.Close()
+		_ = s.db
 	}
 }
 
