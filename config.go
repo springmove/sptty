@@ -6,6 +6,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
 	"gopkg.in/yaml.v2"
 )
@@ -91,7 +92,13 @@ func (s *ConfigService) patchConfigWithEnv(key string, value string) {
 				case reflect.Float32:
 					obj[k], _ = strconv.ParseFloat(value, 32)
 				case reflect.String:
-					obj[k] = value
+					if reflect.TypeOf(obj[k]).String() == "time.Duration" {
+						// time.Duration
+						obj[k], _ = time.ParseDuration(value)
+					} else {
+						// string
+						obj[k] = value
+					}
 				}
 			}
 		case "arr":
@@ -123,7 +130,13 @@ func (s *ConfigService) patchConfigWithEnv(key string, value string) {
 				case reflect.Float32:
 					arr[index], _ = strconv.ParseFloat(value, 32)
 				case reflect.String:
-					arr[index] = value
+					if reflect.TypeOf(arr[index]).String() == "time.Duration" {
+						// time.Duration
+						arr[index], _ = time.ParseDuration(value)
+					} else {
+						// string
+						arr[index] = value
+					}
 				}
 			}
 		}

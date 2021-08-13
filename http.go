@@ -151,7 +151,6 @@ func (s *HttpService) ServiceName() string {
 }
 
 func SimpleResponse(ctx iris.Context, code int, body interface{}, headers ...map[string]string) error {
-	ctx.ResponseWriter().Header().Add("content-type", "application/json")
 	ctx.StatusCode(code)
 
 	if len(headers) > 0 {
@@ -159,6 +158,8 @@ func SimpleResponse(ctx iris.Context, code int, body interface{}, headers ...map
 		for k, v := range h {
 			ctx.ResponseWriter().Header().Add(k, v)
 		}
+	} else {
+		ctx.ResponseWriter().Header().Add("content-type", "application/json")
 	}
 
 	if body == nil {
