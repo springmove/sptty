@@ -178,3 +178,7 @@ func SimpleResponse(ctx iris.Context, code int, body interface{}, headers ...map
 
 	return nil
 }
+
+func (s *HttpService) Instance() *iris.Application {
+	return s.app
+}

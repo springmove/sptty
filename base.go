@@ -1,6 +1,7 @@
 package sptty
 
 import (
+	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 )
 
@@ -29,4 +30,8 @@ type IConfig interface {
 	ConfigName() string
 	Validate() error
 	Default() interface{}
+}
+
+type IServiceHttp interface {
+	Instance() *iris.Application
 }
