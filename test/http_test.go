@@ -2,11 +2,12 @@ package test
 
 import (
 	"fmt"
-	"github.com/kataras/iris/v12"
-	"github.com/linshenqi/sptty"
 	"os"
 	"path"
 	"testing"
+
+	"github.com/kataras/iris/v12"
+	"github.com/linshenqi/sptty"
 )
 
 type testHttp struct {
@@ -39,12 +40,10 @@ func (s *testHttp) Init(app sptty.ISptty) error {
 	})
 
 	app.AddRoute("GET", "/user", func(ctx iris.Context) {
-		var req interface{}
-		if err := ctx.ReadJSON(&req); err != nil {
-			fmt.Println(err.Error())
-		}
 
-		fmt.Println(req)
+		_ = sptty.SimpleResponse(ctx, iris.StatusOK, map[string]interface{}{
+			"awef": 23,
+		})
 	})
 
 	return nil
