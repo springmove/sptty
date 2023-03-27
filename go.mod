@@ -1,4 +1,4 @@
-module github.com/linshenqi/sptty
+module github.com/springmove/sptty
 
 go 1.13
 

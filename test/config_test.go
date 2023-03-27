@@ -5,7 +5,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/linshenqi/sptty"
+	"github.com/springmove/sptty"
 )
 
 // type cfg1 struct {

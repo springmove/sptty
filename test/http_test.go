@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/kataras/iris/v12"
-	"github.com/linshenqi/sptty"
+	"github.com/springmove/sptty"
 )
 
 type testHttp struct {
