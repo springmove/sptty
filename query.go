@@ -1,6 +1,7 @@
 package sptty
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -16,16 +17,27 @@ type IQuery interface {
 	FromCtx(ctx iris.Context)
 	loadDB(db *gorm.DB)
 	ToQuery(paging bool) *gorm.DB
+	ToURLQueryString() string
 }
 
 type QueryBase struct {
 	IQuery
 
-	db *gorm.DB
+	db             *gorm.DB
+	urlQueryString string
 
 	Page     int64
 	PageSize int64
 	IDs      []string
+}
+
+func (s *QueryBase) ToURLQueryString() string {
+	s.urlQueryString = s.urlQueryString + fmt.Sprintf("Page=%d&PageSize=%d&IDs=%s",
+		s.Page,
+		s.PageSize,
+		strings.Join(s.IDs, ","))
+
+	return s.urlQueryString
 }
 
 func (s *QueryBase) loadDB(db *gorm.DB) {
