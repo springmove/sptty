@@ -13,7 +13,7 @@ const (
 )
 
 type IQuery interface {
-	fromCtx(ctx iris.Context)
+	FromCtx(ctx iris.Context)
 	loadDB(db *gorm.DB)
 	ToQuery(paging bool) *gorm.DB
 }
@@ -32,7 +32,7 @@ func (s *QueryBase) loadDB(db *gorm.DB) {
 	s.db = db
 }
 
-func (s *QueryBase) fromCtx(ctx iris.Context) {
+func (s *QueryBase) FromCtx(ctx iris.Context) {
 	ids := ctx.URLParam("IDs")
 	if ids != "" {
 		s.IDs = strings.Split(ids, ",")
@@ -81,7 +81,7 @@ func CreateQueryFromContext(query IQuery, db *gorm.DB, ctx ...iris.Context) IQue
 	query.loadDB(db)
 
 	if len(ctx) > 0 {
-		query.fromCtx(ctx[0])
+		query.FromCtx(ctx[0])
 	}
 
 	return query
