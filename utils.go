@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path"
+	"runtime"
 	"strings"
 
 	"github.com/rs/xid"
@@ -89,4 +90,12 @@ func GetUrlImage(url string) ([]byte, string, error) {
 	}
 
 	return body, mime, nil
+}
+
+func CurrentFuncName() string {
+	pc := make([]uintptr, 1)
+	runtime.Callers(2, pc)
+	f := runtime.FuncForPC(pc[0])
+	vals := strings.Split(f.Name(), ".")
+	return vals[len(vals)-1]
 }
