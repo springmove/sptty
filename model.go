@@ -153,7 +153,10 @@ type SimpleModelBase struct {
 }
 
 func (s *SimpleModelBase) Init() *SimpleModelBase {
-	s.ID = GenerateUID()
+	if s.ID == "" {
+		s.ID = GenerateUID()
+	}
+
 	s.CreatedAt = time.Now().UTC()
 	s.Deleted = false
 
