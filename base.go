@@ -1,22 +1,13 @@
 package sptty
 
-import (
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/context"
-)
-
 type Configs []IConfig
 type Services []IService
 
 type ISptty interface {
-	GetService(name string) IService
-	AddServices(services Services)
-	AddConfigs(configs Configs)
-	GetConfig(name string, config interface{}) error
-	Http() IService
-	Model() IService
-	AddRoute(method string, route string, handler context.Handler)
-	AddModel(values interface{})
+	// GetService(name string) IService
+	// AddServices(services Services)
+	// AddConfigs(configs Configs)
+	// GetConfig(name string, config interface{}) error
 }
 
 type IService interface {
@@ -30,8 +21,4 @@ type IConfig interface {
 	ConfigName() string
 	Validate() error
 	Default() interface{}
-}
-
-type IServiceHttp interface {
-	Instance() *iris.Application
 }

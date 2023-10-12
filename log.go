@@ -1,10 +1,11 @@
 package sptty
 
 import (
-	fr "github.com/lestrrat-go/file-rotatelogs"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
+
+	fr "github.com/lestrrat-go/file-rotatelogs"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -53,16 +54,17 @@ func (c *LogConfig) Default() interface{} {
 	}
 }
 
+
 type LogService struct {
 	cfg LogConfig
 }
 
 func (s *LogService) Init(app ISptty) error {
 	s.cfg = LogConfig{}
-	err := app.GetConfig(s.ServiceName(), &s.cfg)
-	if err != nil {
-		return err
-	}
+	// err := app.GetConfig(s.ServiceName(), &s.cfg)
+	// if err != nil {
+	// 	return err
+	// }
 
 	s.setupLog()
 	return nil

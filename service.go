@@ -5,8 +5,6 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/kataras/iris/v12"
-	"github.com/kataras/iris/v12/context"
 	"gopkg.in/yaml.v2"
 )
 
@@ -20,19 +18,11 @@ func SetTag(tag string) {
 func GetApp() *AppService {
 	if appService == nil {
 		appService = &AppService{
-			http: &HttpService{
-				app: iris.New(),
-			},
-			model:    &ModelService{},
 			config:   &ConfigService{},
 			log:      &LogService{},
-			i18n:     &I18NService{},
 			services: Services{},
 			configs: map[string]IConfig{
-				HttpServiceName:  &HttpConfig{},
-				ModelServiceName: &ModelConfig{},
-				LogServiceName:   &LogConfig{},
-				I18NServiceName:  &I18NConfig{},
+				LogServiceName: &LogConfig{},
 			},
 		}
 	}
@@ -45,19 +35,11 @@ func Log(level LogLevel, msg string, tags ...string) {
 	app.log.Log(level, msg, tags...)
 }
 
-func I18NValue(name string, lang string) string {
-	app := GetApp()
-	return app.i18n.get(name, lang)
-}
-
 type AppService struct {
 	services Services
 	configs  map[string]IConfig
-	http     *HttpService
-	model    *ModelService
 	config   *ConfigService
 	log      *LogService
-	i18n     *I18NService
 }
 
 func (s *AppService) init() error {
@@ -73,30 +55,12 @@ func (s *AppService) init() error {
 		return err
 	}
 
-	if err := s.i18n.Init(s); err != nil {
-		return err
-	}
-
-	if err := s.http.Init(s); err != nil {
-		return err
-	}
-
-	Log(InfoLevel, fmt.Sprintf("Init Service: %s", s.model.ServiceName()), s.model.ServiceName())
-	if err := s.model.Init(s); err != nil {
-		Log(ErrorLevel, fmt.Sprintf("Init Service %s failed: %s", s.model.ServiceName(), err.Error()), s.model.ServiceName())
-		return err
-	}
-
 	for _, v := range s.services {
 		Log(InfoLevel, fmt.Sprintf("Init Service: %s", v.ServiceName()), v.ServiceName())
 		if err := v.Init(s); err != nil {
 			Log(ErrorLevel, fmt.Sprintf("Init Service %s failed: %s", v.ServiceName(), err.Error()), v.ServiceName())
 			return err
 		}
-	}
-
-	if err := s.http.run(); err != nil {
-		return err
 	}
 
 	return nil
@@ -107,7 +71,6 @@ func (s *AppService) release() {
 		v.Release()
 	}
 
-	s.http.Release()
 }
 
 func (s *AppService) Sptting() {
@@ -119,15 +82,15 @@ func (s *AppService) Sptting() {
 	s.release()
 }
 
-func (s *AppService) AddServices(services Services) {
-	s.services = services
-}
+// func (s *AppService) AddServices(services Services) {
+// 	s.services = services
+// }
 
-func (s *AppService) AddConfigs(configs Configs) {
-	for k, v := range configs {
-		s.configs[v.ConfigName()] = configs[k]
-	}
-}
+// func (s *AppService) AddConfigs(configs Configs) {
+// 	for k, v := range configs {
+// 		s.configs[v.ConfigName()] = configs[k]
+// 	}
+// }
 
 func (s *AppService) validateConfigs() error {
 	for _, v := range s.configs {
@@ -165,22 +128,6 @@ func (s *AppService) GetConfig(name string, config interface{}) error {
 
 	body, _ := yaml.Marshal(cfg)
 	return yaml.Unmarshal(body, config)
-}
-
-func (s *AppService) AddRoute(method string, route string, handler context.Handler) {
-	s.http.AddRoute(method, route, handler)
-}
-
-func (s *AppService) AddModel(values interface{}) {
-	s.model.AddModel(values)
-}
-
-func (s *AppService) Http() IService {
-	return s.http
-}
-
-func (s *AppService) Model() IService {
-	return s.model
 }
 
 func (s *AppService) GetService(name string) IService {
