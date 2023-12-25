@@ -55,10 +55,6 @@ func (s *QueryBase) FromCtx(ctx iris.Context) {
 		page = 0
 	}
 
-	if page > 0 {
-		page -= 1
-	}
-
 	s.Page = page
 
 	pageSize, err := strconv.ParseInt(ctx.URLParam("PageSize"), 10, 32)
