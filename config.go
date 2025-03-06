@@ -1,7 +1,7 @@
 package sptty
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"reflect"
 	"strconv"
@@ -33,7 +33,7 @@ func (s *ConfigService) Init(app ISptty) error {
 		return err
 	}
 
-	content, err := ioutil.ReadAll(f)
+	content, err := io.ReadAll(f)
 	if err != nil {
 		return err
 	}

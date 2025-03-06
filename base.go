@@ -8,6 +8,8 @@ import (
 type Configs []IConfig
 type Services []IService
 
+type SerivcesHandler func(ISptty)
+
 type ISptty interface {
 	GetService(name string) IService
 	AddServices(services Services)

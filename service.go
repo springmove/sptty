@@ -60,7 +60,7 @@ type AppService struct {
 	i18n     *I18NService
 }
 
-func (s *AppService) init() error {
+func (s *AppService) init(handler ...SerivcesHandler) error {
 	if err := s.config.Init(s); err != nil {
 		return err
 	}
@@ -87,6 +87,10 @@ func (s *AppService) init() error {
 		return err
 	}
 
+	if len(handler) > 0 {
+		handler[0](s)
+	}
+
 	for _, v := range s.services {
 		Log(InfoLevel, fmt.Sprintf("Init Service: %s", v.ServiceName()), v.ServiceName())
 		if err := v.Init(s); err != nil {
@@ -110,8 +114,8 @@ func (s *AppService) release() {
 	s.http.Release()
 }
 
-func (s *AppService) Sptting() {
-	if err := s.init(); err != nil {
+func (s *AppService) Sptting(handler ...SerivcesHandler) {
+	if err := s.init(handler...); err != nil {
 		fmt.Println(err.Error())
 		return
 	}
