@@ -178,6 +178,6 @@ func (s *BaseConfig) Validate() error {
 	return nil
 }
 
-func (s *BaseConfig) Default() interface{} {
+func (s *BaseConfig) Default() IConfig {
 	return &BaseConfig{}
 }

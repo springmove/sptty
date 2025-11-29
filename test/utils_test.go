@@ -24,5 +24,5 @@ func TestUID(t *testing.T) {
 	// 	return
 	// }
 
-	fmt.Printf(sptty.Sha1("93102ba73b19e781468b157909274353a8ceb6fa"))
+	fmt.Println(sptty.Sha1("93102ba73b19e781468b157909274353a8ceb6fa"))
 }

@@ -1,10 +1,11 @@
 package sptty
 
 import (
-	fr "github.com/lestrrat-go/file-rotatelogs"
-	log "github.com/sirupsen/logrus"
 	"os"
 	"time"
+
+	fr "github.com/lestrrat-go/file-rotatelogs"
+	log "github.com/sirupsen/logrus"
 )
 
 const (
@@ -30,6 +31,8 @@ var LogLevels = map[string]log.Level{
 }
 
 type LogConfig struct {
+	BaseConfig
+
 	File   string        `yaml:"file"`
 	Level  string        `yaml:"level"`
 	MaxAge time.Duration `yaml:"max_age"`
@@ -44,7 +47,7 @@ func (c *LogConfig) Validate() error {
 	return nil
 }
 
-func (c *LogConfig) Default() interface{} {
+func (c *LogConfig) Default() IConfig {
 	return &LogConfig{
 		File:   "STDOUT",
 		Level:  "DEBUG",
