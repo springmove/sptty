@@ -181,5 +181,7 @@ func (s *BaseConfig) Validate() error {
 }
 
 func (s *BaseConfig) Default() IConfig {
-	return &BaseConfig{}
+	return &BaseConfig{
+		Enable: false,
+	}
 }
