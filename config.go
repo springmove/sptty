@@ -168,6 +168,8 @@ func (s *ConfigService) ServiceName() string {
 
 type BaseConfig struct {
 	IConfig
+
+	Enable bool `yaml:"Enable"`
 }
 
 func (s *BaseConfig) ConfigName() string {

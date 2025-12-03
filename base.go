@@ -7,8 +7,6 @@ type SerivcesHandler func(ISptty)
 
 type ISptty interface {
 	GetService(name string) IService
-	AddServices(services Services)
-	AddConfigs(configs Configs)
 	GetConfig(name string, config IConfig) error
 }
 
@@ -23,4 +21,9 @@ type IConfig interface {
 	ConfigName() string
 	Validate() error
 	Default() IConfig
+}
+
+type IServices interface {
+	Services() Services
+	Configs() Configs
 }

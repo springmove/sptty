@@ -39,7 +39,7 @@ type AppService struct {
 	log      *LogService
 }
 
-func (s *AppService) init(handler ...SerivcesHandler) error {
+func (s *AppService) init() error {
 	if err := s.config.Init(s); err != nil {
 		return err
 	}
@@ -50,10 +50,6 @@ func (s *AppService) init(handler ...SerivcesHandler) error {
 
 	if err := s.log.Init(s); err != nil {
 		return err
-	}
-
-	if len(handler) > 0 {
-		handler[0](s)
 	}
 
 	for _, v := range s.services {
@@ -75,12 +71,15 @@ func (s *AppService) release() {
 	}
 }
 
-func (s *AppService) Sptting(handler ...SerivcesHandler) {
+func (s *AppService) Sptting(handlerService IServices) {
 	defer func() {
 		s.release()
 	}()
 
-	if err := s.init(handler...); err != nil {
+	s.addServices(handlerService.Services())
+	s.addConfigs(handlerService.Configs())
+
+	if err := s.init(); err != nil {
 		fmt.Println(err.Error())
 		return
 	}
@@ -90,11 +89,11 @@ func (s *AppService) Sptting(handler ...SerivcesHandler) {
 	<-sigChan
 }
 
-func (s *AppService) AddServices(services Services) {
+func (s *AppService) addServices(services Services) {
 	s.services = services
 }
 
-func (s *AppService) AddConfigs(configs Configs) {
+func (s *AppService) addConfigs(configs Configs) {
 	for k, v := range configs {
 		s.configs[v.ConfigName()] = configs[k]
 	}
