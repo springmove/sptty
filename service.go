@@ -71,13 +71,10 @@ func (s *AppService) release() {
 	}
 }
 
-func (s *AppService) Sptting(handlerService IServices) {
+func (s *AppService) Sptting() {
 	defer func() {
 		s.release()
 	}()
-
-	s.addServices(handlerService.Services())
-	s.addConfigs(handlerService.Configs())
 
 	if err := s.init(); err != nil {
 		fmt.Println(err.Error())
@@ -87,16 +84,6 @@ func (s *AppService) Sptting(handlerService IServices) {
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 	<-sigChan
-}
-
-func (s *AppService) addServices(services Services) {
-	s.services = services
-}
-
-func (s *AppService) addConfigs(configs Configs) {
-	for k, v := range configs {
-		s.configs[v.ConfigName()] = configs[k]
-	}
 }
 
 func (s *AppService) validateConfigs() error {
@@ -149,6 +136,17 @@ func (s *AppService) GetService(name string) IService {
 	}
 
 	return nil
+}
+
+func (s *AppService) AddServices(handler SerivcesHandler) {
+	s.services = handler(s)
+}
+
+func (s *AppService) AddConfigs(handler ConfigsHandler) {
+	configs := handler(s)
+	for k, v := range configs {
+		s.configs[v.ConfigName()] = configs[k]
+	}
 }
 
 type BaseService struct {

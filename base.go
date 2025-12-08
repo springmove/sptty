@@ -3,11 +3,14 @@ package sptty
 type Configs []IConfig
 type Services []IService
 
-type SerivcesHandler func(ISptty)
+type SerivcesHandler func(ISptty) Services
+type ConfigsHandler func(ISptty) Configs
 
 type ISptty interface {
 	GetService(name string) IService
 	GetConfig(name string, config IConfig) error
+	AddServices(handler SerivcesHandler)
+	AddConfigs(handler ConfigsHandler)
 }
 
 type IService interface {
