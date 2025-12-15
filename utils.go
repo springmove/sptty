@@ -11,8 +11,10 @@ import (
 	"path"
 	"runtime"
 	"strings"
+	"time"
 
 	"github.com/rs/xid"
+	"gopkg.in/resty.v1"
 )
 
 type RequestError struct {
@@ -98,4 +100,41 @@ func CurrentFuncName() string {
 	f := runtime.FuncForPC(pc[0])
 	vals := strings.Split(f.Name(), ".")
 	return vals[len(vals)-1]
+}
+
+type HttpClientConfig struct {
+	Timeout      time.Duration     `yaml:"Timeout"`
+	Headers      map[string]string `yaml:"Headers"`
+	PushInterval time.Duration     `yaml:"PushInterval"`
+	MaxRetry     int               `yaml:"MaxRetry"`
+}
+
+func DefaultHttpClientConfig() *HttpClientConfig {
+	return &HttpClientConfig{
+		Timeout:      8 * time.Second,
+		PushInterval: 1 * time.Second,
+		MaxRetry:     3,
+		Headers:      map[string]string{},
+	}
+}
+
+func CreateHttpClient(cfg ...*HttpClientConfig) *resty.Client {
+
+	targetCfg := DefaultHttpClientConfig()
+	if len(cfg) > 0 {
+		targetCfg = cfg[0]
+	}
+
+	client := resty.New()
+
+	client.SetRESTMode()
+	client.SetTimeout(targetCfg.Timeout)
+	client.SetContentLength(true)
+	client.SetHeaders(targetCfg.Headers)
+	client.
+		SetRetryCount(targetCfg.MaxRetry).
+		SetRetryWaitTime(targetCfg.PushInterval).
+		SetRetryMaxWaitTime(20 * time.Second)
+
+	return client
 }

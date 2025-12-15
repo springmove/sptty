@@ -88,8 +88,7 @@ func (s *AppService) Sptting() {
 
 func (s *AppService) validateConfigs() error {
 	for _, v := range s.configs {
-		err := v.Validate()
-		if err != nil {
+		if err := v.Validate(); err != nil {
 			fmt.Printf("Config Error: %s\n", err.Error())
 			return err
 		}
